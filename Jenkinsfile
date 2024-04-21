@@ -24,13 +24,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/wariedap/a-reddit-clone1.git'
             }
         }
-        stage('Build Package') {
-            steps {
-                dir('webapp') {
-                    sh "mvn package"
-                }
-            }
-        }
+        
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube-Server') {
