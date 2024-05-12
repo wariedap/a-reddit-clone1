@@ -46,11 +46,27 @@ pipeline {
                 sh "trivy fs . > trivyfs.txt"
             }
          }
-         stage('Push Docker Image') {
+        stage('Build & Tag Docker Image') {
             steps {
                 script {
                     withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                        sh "docker push posanya/reddit-clone:latest ."
+                        sh "docker build -t posanya/reddit-clone:latest ."
+                    }
+                }
+            }
+        }
+        
+        stage('Docker Image Scan') {
+            steps {
+                sh "trivy image --format table -o trivy-image-report.html posanya/reddit-clone:latest "
+            }
+        }
+        
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
+                        sh "docker push posanya/reddit-clone:latest"
                     }
                 }
             }
