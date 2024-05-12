@@ -55,7 +55,7 @@ pipeline {
         }
         stage('Docker Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html posanya/reddit-clone:latest "
+                sh "trivy image --format table -o trivy-image-report.html posanya/reddit-clone:latest"
             }
         }
         stage('Push Docker Image') {
@@ -69,14 +69,30 @@ pipeline {
         }
         stage('Deploy To Kubernetes') {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
+                withKubeConfig(
+                    caCertificate: '',
+                    clusterName: 'kubernetes',
+                    contextName: '',
+                    credentialsId: 'k8-cred',
+                    namespace: 'reddit-clone',
+                    restrictKubeConfigAccess: false,
+                    serverUrl: 'https://144.126.220.160:6443'
+                ) {
                     sh "kubectl apply -f deployment-service.yaml"
                 }
             }
         }
         stage('Verify the Deployment') {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
+                withKubeConfig(
+                    caCertificate: '',
+                    clusterName: 'kubernetes',
+                    contextName: '',
+                    credentialsId: 'k8-cred',
+                    namespace: 'reddit-clone',
+                    restrictKubeConfigAccess: false,
+                    serverUrl: 'https://144.126.220.160:6443'
+                ) {
                     sh "kubectl get pods -n reddit-clone"
                     sh "kubectl get svc -n reddit-clone"
                 }
