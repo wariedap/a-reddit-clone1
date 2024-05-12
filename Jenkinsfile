@@ -8,7 +8,7 @@ pipeline {
         SCANNER_HOME = tool 'sonar-scanner'
         APP_NAME = "java-registration-app"
         RELEASE = "1.0.0"
-        JENKINS_API_TOKEN = '1105bf46774471ace702dcc34b938f8977'
+        
     }
     stages {
         stage('Clean Workspace') {
@@ -71,35 +71,23 @@ pipeline {
                 }
             }
         }
-        stage("Trivy Image Scan") {
-    steps {
-        script {
-            sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy posanya/java-registration-app:latest --format json > trivy_results.json'
-            
-            // Filter vulnerabilities based on severity using jq (assuming you have jq installed)
-            sh 'cat trivy_results.json | jq \'.[0].Vulnerabilities[] | select(.Severity == "HIGH" or .Severity == "CRITICAL")\' > high_critical_vulnerabilities.json'
-        }
-    }
-}
-
-
-
-      /*  stage ('Cleanup Artifacts') {
-             steps {
-                 script {
-                      sh "docker rmi ${IMAGE_NAME}:${IMAGE_TAG}"
-                      sh "docker rmi ${IMAGE_NAME}:latest"
-                 }
-             }
-         }
-	 */
-	    stage("Trigger CD Pipeline") {
+       
+     
+        stage('Deploy To Kubernetes') {
             steps {
-                script {
-                sh "curl -v -k --user admin:${JENKINS_API_TOKEN} -X POST -H 'cache-control: no-cache' -H 'content-type: application/x-www-form-urlencoded' --data 'IMAGE_TAG=${IMAGE_TAG}' 'http://ec2-100-26-177-139.compute-1.amazonaws.com:8080/job/Reddit-Clone-CD/buildWithParameters?token=gitops-token'"
-
+                withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
+                    sh "kubectl apply -f deployment-service.yaml"
                 }
             }
-         }
-     }
+        }
+        
+        stage('Verify the Deployment') {
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
+                    sh "kubectl get pods -n reddit-clone"
+                    sh "kubectl get svc -n reddit-clone"
+                }
+            }
+        }
+    }
 }
