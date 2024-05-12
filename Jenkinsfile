@@ -8,7 +8,6 @@ pipeline {
         SCANNER_HOME = tool 'sonar-scanner'
         APP_NAME = "java-registration-app"
         RELEASE = "1.0.0"
-        
     }
     stages {
         stage('Clean Workspace') {
@@ -21,7 +20,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/wariedap/a-reddit-clone1.git'
             }
         }
-        
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonar') {
@@ -45,7 +43,7 @@ pipeline {
             steps {
                 sh "trivy fs . > trivyfs.txt"
             }
-         }
+        }
         stage('Build & Tag Docker Image') {
             steps {
                 script {
@@ -55,13 +53,11 @@ pipeline {
                 }
             }
         }
-        
         stage('Docker Image Scan') {
             steps {
                 sh "trivy image --format table -o trivy-image-report.html posanya/reddit-clone:latest "
             }
         }
-        
         stage('Push Docker Image') {
             steps {
                 script {
@@ -71,8 +67,6 @@ pipeline {
                 }
             }
         }
-       
-     
         stage('Deploy To Kubernetes') {
             steps {
                 withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
@@ -80,7 +74,6 @@ pipeline {
                 }
             }
         }
-        
         stage('Verify the Deployment') {
             steps {
                 withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'reddit-clone', restrictKubeConfigAccess: false, serverUrl: 'https://146.190.154.118:6443') {
