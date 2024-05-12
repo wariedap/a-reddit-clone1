@@ -74,7 +74,10 @@ pipeline {
         stage("Trivy Image Scan") {
     steps {
         script {
-            sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy posanya/java-registration-app:latest --severity HIGH,CRITICAL --format table > trivyimage.txt')
+            sh 'docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy posanya/java-registration-app:latest --format json > trivy_results.json'
+            
+            // Filter vulnerabilities based on severity using jq (assuming you have jq installed)
+            sh 'cat trivy_results.json | jq \'.[0].Vulnerabilities[] | select(.Severity == "HIGH" or .Severity == "CRITICAL")\' > high_critical_vulnerabilities.json'
         }
     }
 }
