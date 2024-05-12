@@ -36,7 +36,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-tokens'
                 }
             }
         }
@@ -63,14 +63,14 @@ pipeline {
                  }
              }
          }
-     /*   stage("Trivy Image Scan") {
+        stage("Trivy Image Scan") {
     steps {
         script {
             sh ('docker run -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy osanyap/java-registration-app:latest --exit-code 0 --severity HIGH,CRITICAL --format table > trivyimage.txt')
         }
     }
 }
-*/
+
 
         stage ('Cleanup Artifacts') {
              steps {
