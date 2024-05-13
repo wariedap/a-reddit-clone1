@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment # Kubernetes resource kind we are creating
 metadata:
-  name: reddit-clone-deployment
+  name: reddit-clone
 spec: 
   selector:
     matchLabels:
@@ -25,12 +25,12 @@ spec:
 apiVersion: v1 # Kubernetes API version
 kind: Service # Kubernetes resource kind we are creating
 metadata: # Metadata of the resource kind we are creating
-  name: reddit-clone-ssvc
+  name: reddit-clone
 spec:
   selector:
     app: reddit-clone
   ports:
     - protocol: "TCP"
-      port: 8080 # The port that the service is running on in the cluster
+      port: 8081 # The port that the service is running on in the cluster
       targetPort: 3000 # The port exposed by the service
   type: LoadBalancer # type of the service.
