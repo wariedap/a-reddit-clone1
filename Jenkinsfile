@@ -76,7 +76,7 @@ pipeline {
                     credentialsId: 'k8-cred',
                     namespace: 'reddit-clone',
                     restrictKubeConfigAccess: false,
-                    serverUrl: 'https://144.126.220.160:6443'
+                    serverUrl: 'https://164.90.144.72:6443'
                 ) {
                     sh "kubectl apply -f deployment-service.yaml"
                 }
@@ -91,7 +91,7 @@ pipeline {
                     credentialsId: 'k8-cred',
                     namespace: 'reddit-clone',
                     restrictKubeConfigAccess: false,
-                    serverUrl: 'https://144.126.220.160:6443'
+                    serverUrl: 'https://164.90.144.72:6443'
                 ) {
                     sh "kubectl get pods -n reddit-clone"
                     sh "kubectl get svc -n reddit-clone"
